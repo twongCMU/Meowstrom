@@ -238,7 +238,7 @@ public abstract class Cat : MonoBehaviour {
 
             if (dSqrToTarget < visionDist2 &&
                 dSqrToTarget < bestTargetDist &&
-                canSee(oneObj))
+                canSee(oneObj, visionAngle))
             {
                 //XXX this script component type differs depending on the cat type
                 if (label == "Cat" && oneObj.GetComponent<Cat>().interest <= 0.8f)
@@ -253,7 +253,7 @@ public abstract class Cat : MonoBehaviour {
         return bestTarget;
     }
 
-    public virtual bool canSee(GameObject target)
+    public virtual bool canSee(GameObject target, float visionAngle)
     {
         RaycastHit hit;
         // first see if the target is within the visual cone
@@ -305,7 +305,10 @@ public abstract class Cat : MonoBehaviour {
                 // don't include ourselves
                 continue;
             }
-            if (oneObj.tag == "Cat" && !canSee(oneObj))
+            // we want to check that we can't see it
+            // but that if we had 360 degree vision we could (that is, the cats behind us aren't
+            // blocked by a wall or something
+            if (oneObj.tag == "Cat" && !canSee(oneObj, visionAngle) && canSee(oneObj, 360f))
             {
                 float oneInterest = oneObj.GetComponent<Cat>().interest;
                 if (oneInterest >= 0.8f)
@@ -314,6 +317,7 @@ public abstract class Cat : MonoBehaviour {
                     avgDir += oneObj.transform.position;
                 }
             }
+
         }
         if (count == 0)
         {
