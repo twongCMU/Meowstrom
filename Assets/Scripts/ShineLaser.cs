@@ -15,12 +15,7 @@ public class ShineLaser : MonoBehaviour {
         
         if (Input.GetButton("Fire1"))
         {
-            /*
-            Vector3 mousePos = Input.mousePosition;
-
-            mousePos = Camera.main.ScreenToWorldPoint(mousePos);
-            //mousePos.y = 1.0f;
-            */
+            /* get the point on the plane where the mouse is clicking */
             Plane camPlane = new Plane(Vector3.up, groundQuad.transform.position);
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             float distance;
@@ -28,10 +23,21 @@ public class ShineLaser : MonoBehaviour {
             if (camPlane.Raycast(ray, out distance))
             {
                 mousePos = ray.GetPoint(distance);
+                /* At this point mousePos is where the mouse is on the ground. Now we
+                project a ray from the camera at the point on the ground and the first thing we hit is where we place the laser dot */
+                Vector3 rayDir = mousePos - Camera.main.transform.position;
+                RaycastHit hit;
+                Debug.DrawRay(Camera.main.transform.position, rayDir, Color.red, 2, false);
+                bool isHit = Physics.Raycast(Camera.main.transform.position, rayDir.normalized, out hit, Vector3.Distance(Camera.main.transform.position, mousePos));
+                if (isHit)
+                {
+                    mousePos = hit.point;
+                    mousePos.y = hit.point.y + (laserDot.transform.localScale.y / 2.0f);
 
-
-                mousePos.y = laserDot.transform.position.y;
-
+                }
+                else {
+                    mousePos.y = laserDot.transform.position.y;
+                }
                 laserDot.transform.position = mousePos;
                 laserDot.SetActive(true);
             }
