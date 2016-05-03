@@ -6,6 +6,11 @@ using System.Collections.Generic;
 public class GenerateLevelScript : MonoBehaviour {
     public GameObject ground;
     public GameObject originalWall;
+    public GameObject winTrigger;
+    public GameObject winShow1;
+    public GameObject winShow2;
+    public GameObject winShow3;
+    public GameObject winShow4;
 
     private int blockSize = 10;
 
@@ -21,6 +26,7 @@ public class GenerateLevelScript : MonoBehaviour {
 
     void makeWalls(Dictionary<Vector4, bool> wallList)
     {
+        Vector3 planeOrigin = new Vector3(-1 * (ground.transform.localScale.x / 2), 0, -1 * (ground.transform.localScale.y / 2));
         foreach (Vector4 oneWall in wallList.Keys)
         {
 
@@ -28,14 +34,10 @@ public class GenerateLevelScript : MonoBehaviour {
             {
                 continue;
             }
- 
-            Vector3 planeOrigin = new Vector3(-1 * (ground.transform.localScale.x / 2), 0,
-                -1 * (ground.transform.localScale.y / 2));
+
             GameObject cube = Instantiate(originalWall);
             
-            //todo 3 and 1.5 should be parameters somewhere
-            
-
+            //todo 3 and 1.5 should be parameters somewheer
             if (new Vector2(oneWall.z, oneWall.w) - new Vector2(oneWall.x, oneWall.y) == new Vector2(0, 1))
             {
               
@@ -51,7 +53,20 @@ public class GenerateLevelScript : MonoBehaviour {
             
             cube.SetActive(true);
         }
+        int rows = (int)(ground.transform.localScale.x) / blockSize;
+        int cols = (int)(ground.transform.localScale.y) / blockSize;
+        winTrigger.transform.position = planeOrigin + new Vector3((rows - 1) * blockSize + (blockSize*.5f) + .5f, winTrigger.transform.position.y, (cols - 1) * blockSize + (blockSize*.5f) + .5f);
+        winTrigger.transform.localScale = new Vector3(blockSize - .5f, winTrigger.transform.localScale.y, blockSize - .5f);
 
+        winShow1.transform.position = planeOrigin + new Vector3((rows - 1) * blockSize + (blockSize * .5f) + .25f, winShow1.transform.position.y, (cols - 1) * blockSize + .25f);
+        winShow1.transform.localScale = new Vector3(blockSize - .5f, winShow1.transform.localScale.y, 0.25f);
+        winShow2.transform.position = planeOrigin + new Vector3((rows - 1) * blockSize + .25f, winShow2.transform.position.y, (cols - 1) * blockSize + (blockSize * .5f) + .25f);
+        winShow2.transform.localScale = new Vector3(0.25f, winShow2.transform.localScale.y, blockSize - .5f);
+
+        winShow3.transform.position = planeOrigin + new Vector3((rows - 1) * blockSize + (blockSize * .5f), winShow3.transform.position.y, (cols) * blockSize);
+        winShow3.transform.localScale = new Vector3(blockSize - .5f, winShow3.transform.localScale.y, 0.25f);
+        winShow4.transform.position = planeOrigin + new Vector3((rows) * blockSize, winShow4.transform.position.y, (cols - 1) * blockSize + (blockSize * .5f));
+        winShow4.transform.localScale = new Vector3(0.25f, winShow4.transform.localScale.y, blockSize - .5f);
     }
     /* implementation of Recursive backtracker depth-first search maze generation */
     Dictionary<Vector4, bool> makeMap()
@@ -87,10 +102,11 @@ public class GenerateLevelScript : MonoBehaviour {
                 cellList.Add(new Vector2(i, j), true);
             }
         }
-        /* remove the walls for the start */
+        /* remove the walls for the start and end */
         wallList[new Vector4(0, 0, 0, 1)] = false;
         wallList[new Vector4(0, 0, 1, 0)] = false;
-      
+        wallList[new Vector4(rows, cols - 1, rows, cols)] = false;
+        wallList[new Vector4(rows - 1, cols, rows, cols)] = false;
         Stack<Vector2> backtrackStack = new Stack<Vector2>();
 
         Vector2 currentCell = new Vector2(0, 0);
