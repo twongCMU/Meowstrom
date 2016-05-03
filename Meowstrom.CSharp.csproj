@@ -63,12 +63,13 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\FatNav.cs" />
     <Compile Include="Assets\Scripts\Cat.cs" />
+    <Compile Include="Assets\Scripts\FatNav.cs" />
+    <Compile Include="Assets\Scripts\GenerateLevelScript.cs" />
     <Compile Include="Assets\Scripts\KittenNav.cs" />
     <Compile Include="Assets\Scripts\ShineLaser.cs" />
+    <Compile Include="Assets\Scripts\WinCheck.cs" />
     <Compile Include="Assets\Scripts\navig.cs" />
-    <Compile Include="Assets\WinCheck.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\SyntaxTree\UnityVS\2015\UnityVS.CSharp.targets" />
 </Project>
