@@ -27,8 +27,11 @@ public class ShineLaser : MonoBehaviour {
                 project a ray from the camera at the point on the ground and the first thing we hit is where we place the laser dot */
                 Vector3 rayDir = mousePos - Camera.main.transform.position;
                 RaycastHit hit;
+
+                // this debug ray connects the camera to where in the world a laser dot would land
                 Debug.DrawRay(Camera.main.transform.position, rayDir, Color.red, 2, false);
-                bool isHit = Physics.Raycast(Camera.main.transform.position, rayDir.normalized, out hit, Vector3.Distance(Camera.main.transform.position, mousePos));
+                bool isHit = Physics.Raycast(Camera.main.transform.position, rayDir.normalized, out hit, Vector3.Distance(Camera.main.transform.position, mousePos),
+                     ~(0), QueryTriggerInteraction.Ignore);
                 if (isHit)
                 {
                     mousePos = hit.point;
@@ -46,7 +49,7 @@ public class ShineLaser : MonoBehaviour {
         {
             laserDot.SetActive(false);
         }
-        
+        print("Laser is at " + laserDot.transform.position);
 
         
     }

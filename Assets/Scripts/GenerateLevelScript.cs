@@ -13,7 +13,7 @@ public class GenerateLevelScript : MonoBehaviour {
     public GameObject winShow4;
 
     private int blockSize = 10;
-
+    private int wallHeight = 3;
 	// Use this for initialization
 	void Start () {
         makeWalls(makeMap());
@@ -41,14 +41,14 @@ public class GenerateLevelScript : MonoBehaviour {
             if (new Vector2(oneWall.z, oneWall.w) - new Vector2(oneWall.x, oneWall.y) == new Vector2(0, 1))
             {
               
-                cube.transform.localScale = new Vector3(1, 3, (float)blockSize);
-                cube.transform.position = planeOrigin + new Vector3(oneWall.x * blockSize + (1f * .5f), 1.5f, oneWall.y * blockSize + (blockSize * .5f));
+                cube.transform.localScale = new Vector3(1, wallHeight, (float)blockSize);
+                cube.transform.position = planeOrigin + new Vector3(oneWall.x * blockSize + (1f * .5f), wallHeight*0.5f, oneWall.y * blockSize + (blockSize * .5f));
             }
             else
             {
                
-                cube.transform.position = planeOrigin + new Vector3(oneWall.x * blockSize + (blockSize * .5f), 1.5f, oneWall.y * blockSize + (1f * .5f));
-                cube.transform.localScale = new Vector3((float)blockSize, 3, 1);
+                cube.transform.position = planeOrigin + new Vector3(oneWall.x * blockSize + (blockSize * .5f), wallHeight*0.5f, oneWall.y * blockSize + (1f * .5f));
+                cube.transform.localScale = new Vector3((float)blockSize, wallHeight, 1);
             }
             
             cube.SetActive(true);

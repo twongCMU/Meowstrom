@@ -268,14 +268,9 @@ public abstract class Cat : MonoBehaviour {
         //float angle = Vector3.Angle(new Vector3(targetDir.x, 0f, targetDir.z), transform.forward);
         float angle = Vector3.Angle(targetDir, transform.forward);
 
-        //bool isHit = Physics.Raycast(eyeLocation, targetDirFromEye.normalized, out hit, visionDistance);
+        /* This debug line will connect the cat's eyes with the laser dot (whether or not this is a direction
+         that the cat can see is a separate issue) */
         //Debug.DrawLine(eyeLocation, target.transform.position, Color.red, 2, false);
-        //print("From " + eyeLocation + " to " + target.transform.position);
-        //print(myID + "see: " + angle + " " + target.transform.GetInstanceID() + " " + isHit);
-        //if (isHit)
-        //{
-        //    print(myID + "hit" + hit + " target " + hit.transform.GetInstanceID() + " at " + hit.transform);
-        //}; 
         if (angle < visionAngle * 0.5f &&
             Physics.Raycast(eyeLocation, targetDirFromEye.normalized, out hit, visionDistance, ~(0), QueryTriggerInteraction.Ignore) &&
             hit.transform.GetInstanceID() == target.transform.GetInstanceID())
