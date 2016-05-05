@@ -28,10 +28,14 @@ public class ShineLaser : MonoBehaviour {
                 Vector3 rayDir = mousePos - Camera.main.transform.position;
                 RaycastHit hit;
 
+                // ignore the laser when projecting ray because the laser object has height and we'll gradually fly toward the camera
+                int layerMaskIgnoreLaser = 1 << 8;
+                layerMaskIgnoreLaser = ~layerMaskIgnoreLaser;
+
                 // this debug ray connects the camera to where in the world a laser dot would land
-                Debug.DrawRay(Camera.main.transform.position, rayDir, Color.red, 2, false);
+                //Debug.DrawRay(Camera.main.transform.position, rayDir, Color.red, 2, false);
                 bool isHit = Physics.Raycast(Camera.main.transform.position, rayDir.normalized, out hit, Vector3.Distance(Camera.main.transform.position, mousePos),
-                     ~(0), QueryTriggerInteraction.Ignore);
+                     layerMaskIgnoreLaser, QueryTriggerInteraction.Ignore);
                 if (isHit)
                 {
                     mousePos = hit.point;
@@ -48,8 +52,9 @@ public class ShineLaser : MonoBehaviour {
         else
         {
             laserDot.SetActive(false);
+            //print("BYE");
         }
-        print("Laser is at " + laserDot.transform.position);
+        //print("Laser is at " + laserDot.transform.position);
 
         
     }
