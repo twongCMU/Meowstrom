@@ -33,20 +33,17 @@ public abstract class Cat : MonoBehaviour {
     //invokerepeating
     public virtual void Start()
     {
-
         rate = 0.0f;
         staminaRegen = 0.25f;
         staminaLoss = 0.07f;
         baseSpeed = 5.5f;
         baseAccel = 36.0f;
         speedModifier = (float)Random.Range(0.7f, 1.3f);
-
-
         setInit();
     }
     public virtual void setInit()
     {
-        // I don't know why but this is 1 even though it is initialized to zero;
+        // I don't know why but Unity sets interest=1 even though it is initialized to zero;
         interest = 0;
         navComponent = transform.GetComponent<NavMeshAgent>();
         originalSpeed = baseSpeed;
@@ -56,7 +53,6 @@ public abstract class Cat : MonoBehaviour {
         navComponent.acceleration = baseAccel;
 
         lastTargetUpdateTime = Time.time;
-
 
         GameObject[] objList = GameObject.FindGameObjectsWithTag("LaserID");
         laserID = objList[0].GetComponent<ShineLaser>().laserDot.transform.GetInstanceID();
@@ -76,7 +72,6 @@ public abstract class Cat : MonoBehaviour {
        
         if (rate < 1.0f)
         {
-
             stamina += timeDiff*staminaRegen;
             if (stamina > 1.0f)
             {
@@ -104,10 +99,9 @@ public abstract class Cat : MonoBehaviour {
         {
             return;
         }
-        
 
         /* degrade our interest over time 
-        this doesn't affect our speed   but if interest drops too low we might change targets*/
+        this doesn't affect our speed but if interest drops too low we might change targets*/
         if (lastSeenValid == true)
         {
             interest *= 0.99f;
@@ -116,14 +110,11 @@ public abstract class Cat : MonoBehaviour {
                 interest = 0;
                 lastSeenValid = false;
             }
-            //navComponent.speed = originalSpeed * speedModifier * interest * stamina;
         }
         target = getTarget("Laser");
         if (target != null)
         {
-          
             interest = 1.0f;
-
             lastSeen = target.transform.position;
             Vector2 variation = Random.insideUnitCircle.normalized;
             lastSeen += new Vector3(variation.x, 0f, variation.y);
@@ -181,7 +172,6 @@ public abstract class Cat : MonoBehaviour {
         {
             if (Vector3.Distance(transform.position, lastSeen) < 1f)
             {
-                print("GOT THERE");
                 navComponent.ResetPath();
                 lastSeenValid = false;
                 interest = 0f;
@@ -192,11 +182,11 @@ public abstract class Cat : MonoBehaviour {
             }
         }
         calculateSpeed();
- 
         lastPos = transform.position;
         lastTargetUpdateTime = Time.time;
     }
 
+    /* Update the stamina and interest slider displays */
     public virtual void updateSliders()
     {
         if (interestSlider != null)
@@ -208,12 +198,12 @@ public abstract class Cat : MonoBehaviour {
             staminaSlider.transform.position = Camera.main.WorldToScreenPoint(transform.position + new Vector3(0f, 0f, 2.5f));
         }
     }
+
+    /* Decide what we will pursue */
     public virtual GameObject getTarget(string label)
     {
         GameObject bestTarget = null;
         float bestTargetDist = Mathf.Infinity;
-
-
         GameObject[] objList = GameObject.FindGameObjectsWithTag(label);
 
         foreach (GameObject oneObj in objList)
@@ -229,12 +219,6 @@ public abstract class Cat : MonoBehaviour {
             Vector3 dirToTarget = oneObj.transform.position - transform.position;
             float visionDist2 = visionDistance * visionDistance;
             float dSqrToTarget = dirToTarget.sqrMagnitude;
-
-            if (label == "Laser")
-            {
-               // print(myID + " " + Time.time + "checking laser " + canSee(oneObj) + " " + dSqrToTarget + " " + visionDist2 + " " + bestTargetDist);
-
-            }
 
             if (dSqrToTarget < visionDist2 &&
                 dSqrToTarget < bestTargetDist &&
@@ -253,35 +237,30 @@ public abstract class Cat : MonoBehaviour {
         return bestTarget;
     }
 
+    /* return true if this cat can see the target */
     public virtual bool canSee(GameObject target, float visionAngle)
     {
         RaycastHit hit;
         // first see if the target is within the visual cone
-        //adding transform.up moves the location up 1 unit. We should use the height of the cylinder somehow
-        //Vector3 eyeLocation = transform.position + (transform.up*0.5);
         float height = 1.0f;
         height = transform.localScale.y;
         Vector3 eyeLocation = transform.position + new Vector3(0f, height * 0.8f, 0f);
         Vector3 targetDir = target.transform.position - transform.position;
         Vector3 targetDirFromEye = target.transform.position - eyeLocation;
 
-        //float angle = Vector3.Angle(new Vector3(targetDir.x, 0f, targetDir.z), transform.forward);
         float angle = Vector3.Angle(targetDir, transform.forward);
 
         /* This debug line will connect the cat's eyes with the laser dot (whether or not this is a direction
          that the cat can see is a separate issue) */
         //Debug.DrawLine(eyeLocation, target.transform.position, Color.red, 2, false);
+
         if (angle < visionAngle * 0.5f &&
             Physics.Raycast(eyeLocation, targetDirFromEye.normalized, out hit, visionDistance, ~(0), QueryTriggerInteraction.Ignore) &&
             hit.transform.GetInstanceID() == target.transform.GetInstanceID())
         {
-            // lastSeen = target.transform.position;
-
             return true;
-
         }
         return false;
-
     }
 
     /* 
@@ -295,9 +274,9 @@ public abstract class Cat : MonoBehaviour {
         foreach (Collider oneCollider in nearObj)
         {
             GameObject oneObj = oneCollider.gameObject;
+            // don't include ourselves as something that excites us
             if (oneObj.transform.GetInstanceID() == transform.GetInstanceID())
             {
-                // don't include ourselves
                 continue;
             }
             // we want to check that we can't see it
@@ -312,13 +291,14 @@ public abstract class Cat : MonoBehaviour {
                     avgDir += oneObj.transform.position;
                 }
             }
-
         }
         if (count == 0)
         {
             return Vector3.zero;
         }
         Vector3 final = new Vector3(avgDir.x / count, 0, avgDir.z / count);
+
+        // This debug line points at the direction of the average commotion
         //Debug.DrawLine(transform.position, final, Color.red, 2, false);
         return final.normalized;
     }

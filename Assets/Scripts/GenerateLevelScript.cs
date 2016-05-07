@@ -13,15 +13,10 @@ public class GenerateLevelScript : MonoBehaviour {
     public GameObject winShow4;
 
     private int blockSize = 10;
-    private int wallHeight = 3;
+    private int wallHeight = 2;
 	// Use this for initialization
 	void Start () {
         makeWalls(makeMap());
-	}
-	
-	// Update is called once per frame
-	void Update () {
-	
 	}
 
     void makeWalls(Dictionary<Vector4, bool> wallList)
@@ -68,7 +63,10 @@ public class GenerateLevelScript : MonoBehaviour {
         winShow4.transform.position = planeOrigin + new Vector3((rows) * blockSize, winShow4.transform.position.y, (cols - 1) * blockSize + (blockSize * .5f));
         winShow4.transform.localScale = new Vector3(0.25f, winShow4.transform.localScale.y, blockSize - .5f);
     }
-    /* implementation of Recursive backtracker depth-first search maze generation */
+
+    /* implementation of Recursive backtracker depth-first search maze generation 
+    This generates x,y coordinates of where the wall starts and where it ends, assuming no thickness. On implementation it turns out it would have been easier
+    with a start x,y and a direction but this is easy to calculate.*/
     Dictionary<Vector4, bool> makeMap()
     {
         /* keys = x1,y1, x2,y2 list of walls, value = if wall is in place or open */
@@ -102,7 +100,7 @@ public class GenerateLevelScript : MonoBehaviour {
                 cellList.Add(new Vector2(i, j), true);
             }
         }
-        /* remove the walls for the start and end */
+        /* remove the edge boundary walls for the start and end */
         wallList[new Vector4(0, 0, 0, 1)] = false;
         wallList[new Vector4(0, 0, 1, 0)] = false;
         wallList[new Vector4(rows, cols - 1, rows, cols)] = false;
@@ -110,15 +108,20 @@ public class GenerateLevelScript : MonoBehaviour {
         Stack<Vector2> backtrackStack = new Stack<Vector2>();
 
         Vector2 currentCell = new Vector2(0, 0);
+        /*
+        * I implemented this algorithm from the wikipedia entry
+        * https://en.wikipedia.org/wiki/Maze_generation_algorithm#Recursive_backtracker 
+        */
         /* while there are unvisited nodes */
         while (cellList.Count > 0)
         {
-
             List<Vector2> validNeighborsRelative = new List<Vector2>();
             cellList[currentCell] = false;
 
-            /* make a list of unvisited neighbors then select one and remove the wall between them 
-            these coordinates are relative to the current */
+            /* 
+             * Make a list of unvisited neighbors then select one and remove the wall between them. 
+             * these coordinates are relative to the current 
+             */
             Vector2[] neighborCoordsRelative = new Vector2[] { new Vector2(-1, 0),
                                                 new Vector2(1, 0),
                                                 new Vector2(0, -1),
@@ -132,7 +135,7 @@ public class GenerateLevelScript : MonoBehaviour {
                     validNeighborsRelative.Add(neighborCoordRelative);
                 }
             }
-            print("valid neighbors " + validNeighborsRelative.Count);
+            // if there are unvisited neighbors, pick one
             if (validNeighborsRelative.Count > 0)
             {
                 backtrackStack.Push(currentCell);
@@ -176,6 +179,7 @@ public class GenerateLevelScript : MonoBehaviour {
                
                 currentCell = nextCellAbsolute;
             }
+            // otherwise backtrack, if there are nodes to backtrack to
             else if (backtrackStack.Count > 0)
             {
                 currentCell = backtrackStack.Pop();
