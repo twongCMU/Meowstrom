@@ -7,4 +7,4 @@ Features:
    * Cats have varying stamina, speed, and acceleration
    * Mazes are randomly generated
    
-This was my first time using Unity3D and C#. Since I didn't really know what I was doing, the code is not very clean. However I was able to get it to work and also use the object oriented nature of C# to simplify the different classes of cats.
+This was my first time using Unity3D and C#, and I taught myself everything by watching tutorials on Youtube. Since I didn't really know what I was doing, the code is not very clean. However I was able to get it to work and also use the object oriented nature of C# to simplify the different classes of cats.
